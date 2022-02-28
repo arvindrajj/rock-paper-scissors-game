@@ -13,10 +13,27 @@ import {
   Score,
   ImagesContainer,
   ListContainer,
-  ListItem,
   ImageButton,
   Image,
 } from './styledComponents'
+
+const choicesList = [
+  {
+    id: 'ROCK',
+    imageUrl:
+      'https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/rock-image.png',
+  },
+  {
+    id: 'SCISSORS',
+    imageUrl:
+      'https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/scissor-image.png',
+  },
+  {
+    id: 'PAPER',
+    imageUrl:
+      'https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/paper-image.png',
+  },
+]
 
 export default class Game extends Component {
   state = {
@@ -27,36 +44,57 @@ export default class Game extends Component {
     gameResultText: '',
   }
 
+  getResult = (item1, item2) => {
+    if (item1.id === 'ROCK') {
+      switch (item2.id) {
+        case 'PAPER':
+          return 'YOU LOSE'
+        case 'SCISSORS':
+          return 'YOU WON'
+        default:
+          return 'IT IS DRAW'
+      }
+    } else if (item1.id === 'PAPER') {
+      switch (item2.id) {
+        case 'ROCK':
+          return 'YOU WON'
+        case 'SCISSORS':
+          return 'YOU LOSE'
+        default:
+          return 'IT IS DRAW'
+      }
+    } else {
+      switch (item2.id) {
+        case 'ROCK':
+          return 'YOU LOSE'
+        case 'PAPER':
+          return 'YOU WON'
+        default:
+          return 'IT IS DRAW'
+      }
+    }
+  }
+
   onTriggerGameResult = async yourChoice => {
-    const {choicesList} = this.props
-    console.log(yourChoice.dataTestId)
+    const {score} = this.state
     const randomNum = Math.floor(Math.random() * choicesList.length)
     const randomChoice = choicesList[randomNum]
-    if (yourChoice.id === 'PAPER' && randomChoice.id === 'ROCK') {
-      await this.setState({gameResultText: 'YOU WON'})
-      await this.setState(prevSate => ({score: prevSate.score + 1}))
-    } else if (yourChoice.id === 'SCISSORS' && randomChoice.id === 'PAPER') {
-      await this.setState({gameResultText: 'YOU WON'})
-      await this.setState(prevSate => ({score: prevSate.score + 1}))
-    } else if (yourChoice.id === 'ROCK' && randomChoice.id === 'SCISSORS') {
-      await this.setState({gameResultText: 'YOU WON'})
-      await this.setState(prevSate => ({score: prevSate.score + 1}))
-    } else if (yourChoice.id === 'SCISSORS' && randomChoice.id === 'ROCK') {
-      await this.setState({gameResultText: 'YOU LOSE'})
-      await this.setState(prevSate => ({score: prevSate.score - 1}))
-    } else if (yourChoice.id === 'ROCK' && randomChoice.id === 'PAPER') {
-      await this.setState({gameResultText: 'YOU LOSE'})
-      await this.setState(prevSate => ({score: prevSate.score - 1}))
-    } else if (yourChoice.id === 'PAPER' && randomChoice.id === 'SCISSORS') {
-      await this.setState({gameResultText: 'YOU LOSE'})
-      await this.setState(prevSate => ({score: prevSate.score - 1}))
-    } else if (yourChoice.id === randomChoice.id) {
-      await this.setState({gameResultText: 'IT IS DRAW'})
+    const result = this.getResult(yourChoice, randomChoice)
+    let newScore = score
+    if (result === 'YOU WON') {
+      newScore = score + 1
+    } else if (result === 'YOU LOSE') {
+      newScore = score - 1
+    } else {
+      newScore = score
     }
-
-    await this.setState({playerChoice: yourChoice})
-    await this.setState({opponentChoice: randomChoice})
-    await this.setState({isGameOver: true})
+    await this.setState({
+      playerChoice: yourChoice,
+      opponentChoice: randomChoice,
+      isGameOver: true,
+      gameResultText: result,
+      score: newScore,
+    })
   }
 
   playAgain = () => {
@@ -64,7 +102,6 @@ export default class Game extends Component {
   }
 
   render() {
-    const {choicesList} = this.props
     const {
       score,
       playerChoice,
@@ -77,7 +114,10 @@ export default class Game extends Component {
         <BodyContainer>
           <ScoreBoardContainer>
             <ParaContainer>
-              <Para>Rock Paper Scissors</Para>
+              <Para>
+                ROCK
+                <br /> PAPER <br /> SCISSORS
+              </Para>
             </ParaContainer>
             <ScoreContainer>
               <ScorePara>Score</ScorePara>
@@ -94,17 +134,39 @@ export default class Game extends Component {
           ) : (
             <ImagesContainer>
               <ListContainer>
-                {choicesList.map(each => (
-                  <ListItem key={each.id}>
-                    <ImageButton
-                      data-testid={each.dataTestId}
-                      type="button"
-                      onClick={() => this.onTriggerGameResult(each)}
-                    >
-                      <Image src={each.imageUrl} alt={each.id} />
-                    </ImageButton>
-                  </ListItem>
-                ))}
+                <ImageButton
+                  data-testid="rockButton"
+                  type="button"
+                  onClick={() => this.onTriggerGameResult(choicesList[0])}
+                >
+                  <Image
+                    src={choicesList[0].imageUrl}
+                    alt={choicesList[0].id}
+                    key={choicesList[0].id}
+                  />
+                </ImageButton>
+                <ImageButton
+                  data-testid="scissorsButton"
+                  type="button"
+                  onClick={() => this.onTriggerGameResult(choicesList[1])}
+                >
+                  <Image
+                    src={choicesList[1].imageUrl}
+                    alt={choicesList[1].id}
+                    key={choicesList[1].id}
+                  />
+                </ImageButton>
+                <ImageButton
+                  data-testid="paperButton"
+                  type="button"
+                  onClick={() => this.onTriggerGameResult(choicesList[2])}
+                >
+                  <Image
+                    src={choicesList[2].imageUrl}
+                    alt={choicesList[2].id}
+                    key={choicesList[2].id}
+                  />
+                </ImageButton>
               </ListContainer>
             </ImagesContainer>
           )}

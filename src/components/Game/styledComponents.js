@@ -72,16 +72,11 @@ export const ImagesContainer = styled.div`
     height: 400px;
   }
 `
-export const ListContainer = styled.ul`
-  padding-left: 0px;
-  list-style-type: none;
+export const ListContainer = styled.div`
   width: 280px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-`
-export const ListItem = styled.li`
-  list-style-type: none;
 `
 
 export const ImageButton = styled.button`
